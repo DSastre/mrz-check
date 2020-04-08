@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+        <title>MRZ-Calculator for MRTDs</title> 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+    <body>
+
+
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <img src="./images/locker.png" alt="A Locker Symbol" style="float:right; padding-right: 50px;" >
+              <h1 class="display-4">CDC
+                <small class="text-muted">CheckDigits-Calculator</small>
+              </h1>
+              <p class="lead">Compute a valid check digit or letter for Machine Readable Travel Documents (MRTD).</p>
+            </div>
+          </div>
+
+          <div class="container">
+
+
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- <h2>Please enter a data element</h2> --> 
+                    <h2>Calculate text for a machine readable zone (MRZ) </h2>
+
+                    <form>
+                        <!-- <label for="check-digit">Data Element</label> -->
+                        <input type="text" class="form-control" id="check-digit" aria-describedby="check-digit-help" placeholder="Test 2020">
+                        <small id="check-digit-help" class="form-text text-muted">Alphabetical and numerical characters with total length of maximum 12 characters allowed.</small>
+                        <br>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="cdc" id="checkdigit" value="option1" checked>
+                            <label class="form-check-label" for="checkdigit">
+                            Check Digit
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="cdc" id="checkletter" value="option2">
+                            <label class="form-check-label" for="checkletter">
+                            Check Letter
+
+                            </label>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Calculate</button>
+                    </form>
+                    <br>
+                    <input class="form-control" type="text" placeholder="Result..." readonly>
+                </div>
+            </div>
+
+
+           <!--  <form action="/mailinglist" method="POST">
+
+                <div class="form-group">
+                        <div class="input-group mb-3">
+
+                            <input type="email" class="form-control" name="email" aria-describedby="emailHelp" class="text-center" id="exampleFormControlInput1" placeholder="name@beispiel.de">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-secondary" id="button-addon2">Senden</button>
+                            </div>
+                        </div>
+
+                        <small id="emailHelp" class="form-text text-muted">Deine Mail-Adresse wird von uns nie mit anderen geteilt werden. Eine Möglichkeit zur Abmeldung ist bei jeder Benachrichtigung vorhanden.</small>
+                </div>
+            
+            </form> -->
+
+
+        </div>
+
+        <script>
+            
+            /*****************
+            * MRZ Check
+            *****************/
+            
+            const testInputs = [
+                'TestNr1', 
+                '25Nov1987',
+                '54aslf9u32n4',
+                'ISBDurlach',
+                '76133 KA',
+                'Bewerbung100',
+                'MehrAls12Zeichen',
+                '',
+                '123456789012',
+                '123'
+            ];
+
+            const weighting = [7, 3, 1];
+            
+            const valuesABC = {
+                A: 10,
+                B: 11,
+                C: 12,
+                D: 13,
+                E: 14,
+                F: 15,
+                G: 16,
+                H: 17,
+                I: 18,
+                J: 19,
+                K: 20,
+                L: 21,
+                M: 22,
+                N: 23,
+                O: 24,
+                P: 25,
+                Q: 26,
+                R: 27,
+                S: 28,
+                T: 29,
+                U: 30,
+                V: 31,
+                W: 32,
+                X: 33,
+                Y: 34,
+                Z: 35,
+                '<': 0
+            }
+
+            const results = Array(testInputs.length);
+
+
+            //Prepare data for calculation
+            const prepareData = inputList => {
+                const convertedArray = inputList;
+                for (let i = 0; i < convertedArray.length; i++) {
+                    if (convertedArray[i].length == 0) {
+                        // handle input strings with no length
+                        convertedArray[i] = '<<<<<<<<<<<<';
+                        console.log(`Element at index ${i} didn't contain any symbols and has been filled with '<'.`)
+                    } else {
+                        // convert all letters to uppercase-notation
+                        convertedArray[i] = convertedArray[i].toUpperCase();
+                    };
+                    // convert strings to arrays
+                    convertedArray[i] = Array.from(convertedArray[i]);
+
+                    if (convertedArray[i].length <= 12) {
+                        // fill all elements with less than 12 positions with '<'
+                        const fillSymbols = Array(12 - convertedArray[i].length).fill('<');
+                        convertedArray[i] = Array.from(convertedArray[i]).concat(fillSymbols);
+                    } else {
+                        // trim elements with more than 12 positions
+                        convertedArray[i].splice(12);
+                        console.log(`Element at index ${i} exceeded the maximum length of 12 symbols and has been trimmed.`)
+                    };
+                    // fill all spaces between arrays with '<'
+                    for (let j = 0; j < 12; j++) {
+                        if (convertedArray[i][j] == ' ') {
+                            convertedArray[i][j] = '<';
+                        }
+                    }
+                    results[i] = convertedArray[i].join('');
+                }
+                //console.log(convertedArray);
+                return convertedArray;
+            }
+
+
+            const convertInputToNumbers = inputArray => {
+                const preparedData = prepareData(inputArray);
+                for (let i = 0; i < preparedData.length; i++) {
+                    for (let j = 0; j < 12; j++) {
+                        if (parseInt(preparedData[i][j]) >= 0) {
+                            // convert existing numbers within strings to nrs
+                            preparedData[i][j] = parseInt(preparedData[i][j]);
+                        } else {
+                            // convert alphabetical symbols and '<' to their respective nrs
+                            preparedData[i][j] = valuesABC[preparedData[i][j]];
+                        } 
+                    }
+                }
+                //console.log(preparedData)
+                return preparedData;
+            }
+
+            //convertInputToNumbers(testInputs);
+
+
+
+
+            // create check digit 
+            const createCheckDigit = inputArray => {
+                
+                const numbersArray = convertInputToNumbers(inputArray);
+
+                for (let i = 0; i<numbersArray.length; i++) {
+                    
+                    // step 1: multiply each digit with corresponding wighting nr.
+                    for (let j = 0; j<12; j++) {
+                        numbersArray[i][j] = numbersArray[i][j] * weighting[j%3];
+                    };
+                    // step 2: add the products from step 1
+                    numbersArray[i] = numbersArray[i].reduce((accumulator, currentVal) =>
+                        accumulator + currentVal
+                    );
+
+                    // step 3 & 4: Divide by ten and keep reminder
+                    numbersArray[i] = numbersArray[i] % 10;
+
+
+                    results[i] = [results[i], numbersArray[i]].join('');
+
+
+                };
+                //console.log(numbersArray);
+                return results;
+            }
+
+           console.log(createCheckDigit(testInputs));
+
+
+
+            // create check letter 
+            const createCheckLetter = inputArray => {
+                
+                const numbersArray = convertInputToNumbers(inputArray);
+                const lettersArray = Array(inputArray.length);
+
+                for (let i = 0; i<numbersArray.length; i++) {
+                    
+                    // step 1: multiply each digit with corresponding wighting nr.
+                    for (let j = 0; j<12; j++) {
+                        numbersArray[i][j] = numbersArray[i][j] * weighting[j%3];
+                    };
+                    // step 2: add the products from step 1
+                    numbersArray[i] = numbersArray[i].reduce((accumulator, currentVal) =>
+                        accumulator + currentVal
+                    );
+
+                    // step 3 & 4: Divide by ten and keep reminder
+                    numbersArray[i] = numbersArray[i] % 26;
+                    console.log(Object.entries(valuesABC)[numbersArray[i]][0]);
+                    lettersArray[i] = Object.entries(valuesABC)[numbersArray[i]][0];
+
+
+                    results[i] = [results[i], lettersArray[i]].join('');
+
+
+                };
+                //console.log(numbersArray);
+                return results;
+            }
+            
+
+           // console.log(createCheckLetter(testInputs));
+            
+
+
+        </script>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    </body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+        <title>CDC | Check Digits Calculator</title> 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <img src="./images/locker.png" alt="A Locker Symbol" style="float:right; padding-right: 50px;" >
+              <h1 class="display-4">CDC
+                <small class="text-muted">Check Digits Calculator</small>
+              </h1>
+              <p class="lead">Compute a valid check digit or letter for Machine Readable Travel Documents (MRTD).</p>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div class="card">
+                <div class="card-body">
+
+                    <h2>Calculate text for a machine readable zone (MRZ)</h2>
+
+                    <form>
+                        <input type="text" class="form-control" id="input-field" aria-describedby="check-digit-help" placeholder="Your Input ...">
+                        <small id="check-digit-help" class="form-text text-muted">Alphabetical and numerical characters with total length of maximum 12 characters allowed.</small>
+                        <br>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="cdc" id="checkdigit" value="option1" checked>
+                            <label class="form-check-label" for="checkdigit">
+                            with a check digit (0-9)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="cdc" id="checkletter" value="option2">
+                            <label class="form-check-label" for="checkletter">
+                            with a check letter in addition (0-9, A-Z)
+                            </label>
+                        </div>
+                        <br>
+                        <button type="button" class="btn btn-primary" id="submit-button">Calculate</button>
+                    </form>
+                    <br>
+                    <code><input class="form-control" type="text" placeholder="Result ..." readonly id="result-field"></code>
+                    <br>
+                    <samp style="color:#e83e8c;"><p id="console-log1"></p></samp>
+                </div>
+            </div>
+            <br>
+            <br>
+
+
+            <div class="card">
+                <div class="card-body">
+
+                    <h3 class="card-title">Why it is preferred to use a check letter in addition</h3>
+                    <p class="lead">If you only use numbers from 0-9 you are limited to 10 symbols in total to encode your internal number result from the algorithm. Now, in the first place this is due to the limitiation of our decimal system that only offers 10 digits. To trespass this limit we can enhance our symbol list by all alphabetical characters from A-Z so that we end up with 36 different symbols: 0-9 and A-Z. In summary it means that our encoding process is even more precise because our check symbol - based now on modulo 36 - repeats less often and still only consists of one single character.</p>
+
+                </div>
+            </div>
+
+
+            <br>
+            <br>
+
+        </div>
+
+        <footer class="jumbotron jumbotron-fluid" style="margin-bottom:0;">
+            <div class="container">
+                <div>              
+                    <br>
+                    <p class="text-center text-muted">Made with Bootstrap and JavaScript <br>by M. Schneiderbanger.</p>
+                    <br>
+                </div>  
+            </div>
+        </footer>
+
+        <script src="./scripts/main.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
