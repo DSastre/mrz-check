@@ -53,7 +53,6 @@ const prepareData = testingString => {
     };
     // convert strings to arrays
     testingString = Array.from(testingString);
-
     if (testingString.length <= 12) {
         // fill all elements with less than 12 positions with '<'
         const fillSymbols = Array(12 - testingString.length).fill('<');
@@ -73,12 +72,11 @@ const prepareData = testingString => {
     for (let i = 0; i < 12; i++) {
         if (
             Object.keys(valuesABC).includes(testingString[i]) == false 
-            && valuesDigits.includes(testingString[i]) == false) { 
-                errorMessage.textContent += `> Invalid symbol ${testingString[i]} has been replaced with '<'.\r\n`;
+            && valuesDigits.includes(parseInt(testingString[i])) == false) { 
+                errorMessage.textContent += `> Invalid symbol '${testingString[i]}' has been replaced with '<'.\r\n`;
                 testingString[i] = '<' 
             } 
     };
-
     result = testingString.join('');
     console.log('prepared string for further calculation: ' + testingString);
     return testingString;
