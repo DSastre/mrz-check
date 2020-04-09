@@ -3,6 +3,7 @@
 *****************/
     
 const weighting = [7, 3, 1];
+const valuesDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const valuesABC = {
     A: 10,
     B: 11,
@@ -42,7 +43,6 @@ errorMessage.setAttribute('style', 'white-space: pre-line;');
 const prepareData = testingString => {
     console.log('raw input: ' + testingString);
     const convertedArray = testingString;
-    errorMessage.setAttribute('style', 'white-space: pre-line;');
     if (testingString.length == 0) {
         // handle input strings with no length
         testingString = '<<<<<<<<<<<<';
@@ -68,7 +68,17 @@ const prepareData = testingString => {
         if (testingString[i] == ' ') {
             testingString[i] = '<';
         }
-    }
+    };
+    // change invalid symbols to '<'
+    for (let i = 0; i < 12; i++) {
+        if (
+            Object.keys(valuesABC).includes(testingString[i]) == false 
+            && valuesDigits.includes(testingString[i]) == false) { 
+                errorMessage.textContent += `> Invalid symbol ${testingString[i]} has been replaced with '<'.\r\n`;
+                testingString[i] = '<' 
+            } 
+    };
+
     result = testingString.join('');
     console.log('prepared string for further calculation: ' + testingString);
     return testingString;
@@ -86,17 +96,6 @@ const convertInputToNumbers = inputString => {
             // convert alphabetical symbols and '<' to their respective nrs
             preparedData[i] = valuesABC[preparedData[i]];
         } 
-    };
-    // convert all unmatched fields to 0s
-    for (let i = 0; i < 12; i++) {
-        let invalidSymbol = false;
-        if (preparedData[i] == undefined) {
-            preparedData[i] = 0;
-            invalidSymbol = true;
-        };
-        if (invalidSymbol) {
-            errorMessage.textContent += `> Invalid symbols have been replaced with '<'.\r\n`;
-        }
     };
     console.log('input converted in numbers: ' + preparedData)
     return preparedData;
