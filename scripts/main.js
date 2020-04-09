@@ -35,8 +35,17 @@ const valuesABC = {
 }
 
 let result = '';
-let errorMessage = document.getElementById('console-log');
-// necessary to use \r\n in textContent commands
+
+
+// HTML Document Elements
+const errorMessage = document.getElementById('console-log');
+const radioButton_onlyDigit = document.getElementById('checkdigit');
+const inputField = document.getElementById('input-field');
+const resultField = document.getElementById('result-field');
+const submitButton = document.getElementById('submit-button');
+
+
+// this is necessary to use \r\n in textContent commands
 errorMessage.setAttribute('style', 'white-space: pre-line;');
 
 
@@ -73,7 +82,7 @@ const prepareData = testingString => {
         if (
             Object.keys(valuesABC).includes(testingString[i]) == false 
             && valuesDigits.includes(parseInt(testingString[i])) == false) { 
-                errorMessage.textContent += `> Invalid symbol '${testingString[i]}' has been replaced with '<'.\r\n`;
+                errorMessage.textContent += `> Invalid symbol '${testingString[i]}' at index ${i} has been replaced with '<'.\r\n`;
                 testingString[i] = '<' 
             } 
     };
@@ -157,14 +166,13 @@ const createCheckLetter = inputString => {
 }
 
 
-document.getElementById('submit-button').onclick = () => {
-    document.getElementById('console-log').textContent = '';
-    let withDigit = document.getElementById('checkdigit').checked;
-    if (withDigit) {
-        let checkDigitResult = createCheckDigit(document.getElementById('input-field').value);
-        document.getElementById('result-field').setAttribute('placeholder', checkDigitResult);
+submitButton.onclick = () => {
+    errorMessage.textContent = '';
+    if (radioButton_onlyDigit.checked) {
+        let checkDigitResult = createCheckDigit(inputField.value);
+        resultField.setAttribute('placeholder', checkDigitResult);
     } else {
-        let checkLetterResult = createCheckLetter(document.getElementById('input-field').value);
-        document.getElementById('result-field').setAttribute('placeholder', checkLetterResult);
+        let checkLetterResult = createCheckLetter(inputField.value);
+        resultField.setAttribute('placeholder', checkLetterResult);
     }
 };
