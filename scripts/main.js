@@ -45,7 +45,6 @@ const prepareData = testingString => {
         testingString = '<<<<<<<<<<<<';
         document.getElementById('console-log1')
         .textContent = `Element didn't contain any symbols and has been filled with '<'.`;
-
     } else {
         // convert all letters to uppercase-notation
         testingString = testingString.toUpperCase();
@@ -62,7 +61,6 @@ const prepareData = testingString => {
         testingString.splice(12);
         document.getElementById('console-log1')
         .textContent = `Element exceeded the maximum length of 12 symbols and has been trimmed.`;
-
     };
     // fill all spaces between arrays with '<'
     for (let i = 0; i < 12; i++) {
@@ -87,7 +85,13 @@ const convertInputToNumbers = inputString => {
             // convert alphabetical symbols and '<' to their respective nrs
             preparedData[i] = valuesABC[preparedData[i]];
         } 
-    }
+    };
+    // convert all unmatched fields to 0s
+    for (let i = 0; i < 12; i++) {
+        if (preparedData[i] == undefined) {
+            preparedData[i] = 0;
+        }
+    };
     console.log('input converted in numbers: ' + preparedData)
     return preparedData;
 }
