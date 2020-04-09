@@ -34,17 +34,19 @@ const valuesABC = {
 }
 
 let result = '';
+let errorMessage = document.getElementById('console-log');
+// necessary to use \r\n in textContent commands
+errorMessage.setAttribute('style', 'white-space: pre-line;');
 
 
 const prepareData = testingString => {
     console.log('raw input: ' + testingString);
     const convertedArray = testingString;
-    
+    errorMessage.setAttribute('style', 'white-space: pre-line;');
     if (testingString.length == 0) {
         // handle input strings with no length
         testingString = '<<<<<<<<<<<<';
-        document.getElementById('console-log1')
-        .textContent = `Element didn't contain any symbols and has been filled with '<'.`;
+        errorMessage.textContent += `> Element didn't contain any symbols and has been filled with '<'.\r\n`;
     } else {
         // convert all letters to uppercase-notation
         testingString = testingString.toUpperCase();
@@ -59,8 +61,7 @@ const prepareData = testingString => {
     } else {
         // trim elements with more than 12 positions
         testingString.splice(12);
-        document.getElementById('console-log1')
-        .textContent = `Element exceeded the maximum length of 12 symbols and has been trimmed.`;
+        errorMessage.textContent += `> Element exceeded the maximum length of 12 symbols and has been trimmed.\r\n`;
     };
     // fill all spaces between arrays with '<'
     for (let i = 0; i < 12; i++) {
@@ -88,8 +89,13 @@ const convertInputToNumbers = inputString => {
     };
     // convert all unmatched fields to 0s
     for (let i = 0; i < 12; i++) {
+        let invalidSymbol = false;
         if (preparedData[i] == undefined) {
             preparedData[i] = 0;
+            invalidSymbol = true;
+        };
+        if (invalidSymbol) {
+            errorMessage.textContent += `> Invalid symbols have been replaced with '<'.\r\n`;
         }
     };
     console.log('input converted in numbers: ' + preparedData)
@@ -155,7 +161,7 @@ const createCheckLetter = inputString => {
 
 
 document.getElementById('submit-button').onclick = () => {
-    document.getElementById('console-log1').textContent = '';
+    document.getElementById('console-log').textContent = '';
     let withDigit = document.getElementById('checkdigit').checked;
     if (withDigit) {
         let checkDigitResult = createCheckDigit(document.getElementById('input-field').value);
