@@ -1,10 +1,10 @@
 # MRZ Check
 
-MRZ Check is a website for calculating check digits for Machine Readable Travel Documents (MRTD).
+MRZ Check is a HTML-page using JavaScript for calculating check digits for Machine Readable Travel Documents (MRTD).
 
 ## Installation
 
-Download all files and open index.html in your Browser.
+Download all files and open index.html in your Browser. The page uses Bootstrap and needs internet connection to load the associated scripts.
 
 ## Usage
 
@@ -14,6 +14,7 @@ To follow the discrete steps of the algorithm open the console in the DevTools o
 
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
