@@ -77,26 +77,23 @@ const DOC = {
 }
 
 
-CALC.prepareData = inputString => {
-    
+CALC.prepareData = inputString => {   
     CALC.log(
         `> Raw input: '${inputString}'\r\n`
     );  
-    
     let upperCaseString = inputString.toUpperCase();
     if (upperCaseString.length == 0) {
         upperCaseString = '<<<<<<<<<<<<';
         CALC.error(
             `> Element didn't contain any symbols and has been filled with '<'.\r\n`
         );
-    };
-    
+    };    
     let convertedToArray = Array.from(upperCaseString);
     if (convertedToArray.length <= 12) { 
         const fillTail = Array(12 - convertedToArray.length).fill('<');
         convertedToArray = convertedToArray.concat(fillTail);
     } else { 
-        convertedToArray = convertedToArray.splice(12);
+        convertedToArray.splice(12);
         CALC.error(
             `> Element exceeded the maximum length of 12 symbols and has been trimmed.\r\n`
         );
@@ -120,26 +117,26 @@ CALC.prepareData = inputString => {
 }
 
 
-CALC.convertInputToNumbers = inputString => {
+CALC.transformInputToNumbers = inputString => {
     const preparedData = CALC.prepareData(inputString);
-    
+    const transformedToNumbers = [];
     for (let i = 0; i < 12; i++) {
         if (parseInt(preparedData[i]) >= 0) {
-            // convert existing numbers within strings to nrs
-            preparedData[i] = parseInt(preparedData[i]);
+            transformedToNumbers[i] = parseInt(preparedData[i]);
         } else {
-            // convert alphabetical symbols and '<' to their respective nrs
-            preparedData[i] = CALC._consideredValues._abc[preparedData[i]];
+            transformedToNumbers[i] = CALC._consideredValues._abc[preparedData[i]];
         } 
     };
-    console.log('input converted in numbers: ' + preparedData)
-    return preparedData;
+    CALC.log(
+        `> Input transformed into numbers: ${transformedToNumbers}\r\n`
+    )
+    return transformedToNumbers;
 }
 
 
 CALC.createCheckDigit = inputString => {
     
-    let inputAsNumbers = CALC.convertInputToNumbers(inputString);
+    let inputAsNumbers = CALC.transformInputToNumbers(inputString);
         
     // step 1: multiply each digit with corresponding wighting nr.
     for (let j = 0; j<12; j++) {
@@ -159,36 +156,38 @@ CALC.createCheckDigit = inputString => {
     return CALC.result;
 }
 
-/**
- * 
- */
+
 CALC.createCheckLetter = inputString => {
-    
-    let inputAsNumbers = CALC.convertInputToNumbers(inputString);
-    let letter
-    // step 1: multiply each digit with corresponding wighting nr.
-    for (let j = 0; j<12; j++) {
-        inputAsNumbers[j] = inputAsNumbers[j] * CALC._weighting[j%3];
+    const inputAsNumbers = CALC.transformInputToNumbers(inputString);
+    const multiplicationResults = []; 
+    for (let i = 0; i < 12; i++) {
+        multiplicationResults[i] = inputAsNumbers[i] * CALC._weighting[i%3];
     };
-    console.log('step 1) multiplication results: ' + inputAsNumbers);
-    // step 2: add the products from step 1
-    inputAsNumbers = inputAsNumbers.reduce((accumulator, currentVal) =>
-        accumulator + currentVal
+    CALC.log(
+        `> Step 1) Multiplication results: ${multiplicationResults}\r\n`
     );
-    console.log('step 2) added products from step 1: ' + inputAsNumbers);
-    // step 3 & 4: Divide by 36 and keep reminder
-    inputAsNumbers = inputAsNumbers % 36;
-    console.log('step 3 & 4) reminder of division by 36: ' + inputAsNumbers);
+    const sumOfAllProducts = multiplicationResults.reduce((previousVal, currentVal) =>
+        previousVal + currentVal
+    );
+    CALC.log(
+        `> Step 2) Added products from step 1: ${sumOfAllProducts}\r\n`
+    );
+    const reminderOfDivison = sumOfAllProducts % 36;
+    CALC.log(`> Step 3 & 4) Reminder of division by 36: ${reminderOfDivison}\r\n`);
     // results from 0-9 are displayed as nr., above, alphabetical chars are used.
-    if (inputAsNumbers < 10) {
-        letter = inputAsNumbers;
+
+    let checkLetter;
+    if (reminderOfDivison < 10) {
+        checkLetter = reminderOfDivison;
     } else {
-        letter = Object.entries(CALC._consideredValues._abc)[inputAsNumbers - 10][0];
+        checkLetter = Object.entries(CALC._consideredValues._abc)[reminderOfDivison - 10][0];
     }
 
-    CALC.result = [CALC.result, '<<<', letter].join('');
+    CALC.result = [CALC.result, '<<<', checkLetter].join('');
 
-    console.log('result with check letter: ' + CALC.result);
+    CALC.log(
+        `> Result with check letter: ${CALC.result}\r\n`
+    );
     return CALC.result;
 }
 
