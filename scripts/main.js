@@ -7,7 +7,7 @@
 
 const CALC = {
     _weighting: [7, 3, 1],
-    _values: { 
+    _consideredValues: { 
         _digits: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         _abc: {
             A: 10, B: 11, C: 12, D: 13, E: 14,
@@ -18,12 +18,12 @@ const CALC = {
             Z: 35, '<': 0
         },
     },
-    get values() {
+    get consideredValues() {
         const digitsAsStrings = [];
-        this._values._digits.forEach(element => {
+        this._consideredValues._digits.forEach(element => {
             digitsAsStrings.push(element.toString());
         });
-        return digitsAsStrings.concat(Object.keys(this._values._abc));
+        return digitsAsStrings.concat(Object.keys(this._consideredValues._abc));
     },
     msg: { 
         emptyError: `> Element didn't contain any symbols and has been filled with '<'.\r\n`,
@@ -97,7 +97,7 @@ CALC.prepareData = testingString => {
     });
     // change invalid symbols to '<'
     for (let i = 0; i < 12; i++) {
-        if (CALC.values.includes(testingString[i]) == false) { 
+        if (CALC.consideredValues.includes(testingString[i]) == false) { 
             DOC.errorField = CALC.msg.invalidError(testingString[i], i);
             testingString[i] = '<';
         } 
@@ -117,7 +117,7 @@ const convertInputToNumbers = inputString => {
             preparedData[i] = parseInt(preparedData[i]);
         } else {
             // convert alphabetical symbols and '<' to their respective nrs
-            preparedData[i] = CALC._values._abc[preparedData[i]];
+            preparedData[i] = CALC._consideredValues._abc[preparedData[i]];
         } 
     };
     console.log('input converted in numbers: ' + preparedData)
@@ -171,7 +171,7 @@ const createCheckLetter = inputString => {
     if (inputAsNumbers < 10) {
         letter = inputAsNumbers;
     } else {
-        letter = Object.entries(CALC._values._abc)[inputAsNumbers - 10][0];
+        letter = Object.entries(CALC._consideredValues._abc)[inputAsNumbers - 10][0];
     }
 
     CALC.result = [CALC.result, '<<<', letter].join('');
