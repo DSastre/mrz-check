@@ -77,49 +77,50 @@ const DOC = {
 }
 
 
-/* 
-function:  CALC.prepareData
-
-- converts all letters to uppercase-notation
-- handles cases with no input
-- converts string to arrays
-- fills all elements with less than 12 positions with '<'
-- trims elements with more than 12 positions
-- fills all spaces between arrays with '<'
-- changes invalid symbols to '<' 
-*/
-
-CALC.prepareData = testingString => {
-    CALC.log(CALC.msg.rawLog(testingString));   // log raw input
-    testingString = testingString.toUpperCase();    // convert to uppercase
-    if (testingString.length == 0) {    // handle empty string
-        testingString = '<<<<<<<<<<<<';
-        CALC.error(CALC.msg.emptyError);   // log error
+CALC.prepareData = inputString => {
+    
+    CALC.log(
+        `> Raw input: '${inputString}'\r\n`
+    );  
+    
+    let upperCaseString = inputString.toUpperCase();
+    if (upperCaseString.length == 0) {
+        upperCaseString = '<<<<<<<<<<<<';
+        CALC.error(
+            `> Element didn't contain any symbols and has been filled with '<'.\r\n`
+        );
     };
-    testingString = Array.from(testingString);  // make array from string
-    if (testingString.length <= 12) {   // fill strings with length <= 12
-        const fillSymbols = Array(12 - testingString.length).fill('<');
-        testingString = Array.from(testingString).concat(fillSymbols);
-    } else {    // trim strings with length > 12
-        testingString.splice(12);
-        CALC.error(CALC.msg.exceedError);  // log error
+    
+    let convertedToArray = Array.from(upperCaseString);
+    if (convertedToArray.length <= 12) { 
+        const fillTail = Array(12 - convertedToArray.length).fill('<');
+        convertedToArray = convertedToArray.concat(fillTail);
+    } else { 
+        convertedToArray = convertedToArray.splice(12);
+        CALC.error(
+            `> Element exceeded the maximum length of 12 symbols and has been trimmed.\r\n`
+        );
     };
-    testingString.forEach(element => {  // fill spaces with '<'
+    convertedToArray.forEach(element => {
         if (element == ' ') { element = '<'}
     });
-    for (let i = 0; i < 12; i++) {  // replace invalid symbols with '<'
-        if (CALC.consideredValues.includes(testingString[i]) == false) { 
-            CALC.error(CALC.msg.invalidError(testingString[i], i));
-            testingString[i] = '<';
+    for (let i = 0; i < 12; i++) {
+        if (CALC.consideredValues.includes(convertedToArray[i]) == false) { 
+            CALC.error(
+                `> Invalid symbol '${convertedToArray[i]}' at index ${i} has been replaced with '<'.\r\n`
+            );
+            convertedToArray[i] = '<';
         } 
     };
-    CALC.result = testingString.join('');
-    CALC.log(CALC.msg.preparedLog(testingString));
-    return testingString;
+    CALC.result = convertedToArray.join('');
+    CALC.log(
+        `> Prepared string for further calculation: '${convertedToArray}'\r\n`
+    );
+    return convertedToArray;
 }
 
 
-const convertInputToNumbers = inputString => {
+CALC.convertInputToNumbers = inputString => {
     const preparedData = CALC.prepareData(inputString);
     
     for (let i = 0; i < 12; i++) {
@@ -136,10 +137,9 @@ const convertInputToNumbers = inputString => {
 }
 
 
-// create check digit 
-const createCheckDigit = inputString => {
+CALC.createCheckDigit = inputString => {
     
-    let inputAsNumbers = convertInputToNumbers(inputString);
+    let inputAsNumbers = CALC.convertInputToNumbers(inputString);
         
     // step 1: multiply each digit with corresponding wighting nr.
     for (let j = 0; j<12; j++) {
@@ -159,11 +159,12 @@ const createCheckDigit = inputString => {
     return CALC.result;
 }
 
-
-// create check letter 
-const createCheckLetter = inputString => {
+/**
+ * 
+ */
+CALC.createCheckLetter = inputString => {
     
-    let inputAsNumbers = convertInputToNumbers(inputString);
+    let inputAsNumbers = CALC.convertInputToNumbers(inputString);
     let letter
     // step 1: multiply each digit with corresponding wighting nr.
     for (let j = 0; j<12; j++) {
@@ -191,21 +192,19 @@ const createCheckLetter = inputString => {
     return CALC.result;
 }
 
-
+/**
+ * 
+ */
 DOC.submitButton.onclick = () => {
-    
-    // this is necessary to use \r\n in textContent commands
-    DOC._errorField.setAttribute('style', 'white-space: pre-line;');
-    DOC._logField.setAttribute('style', 'white-space: pre-line;');
-    
-    // reset error messages with every new request
-    DOC._errorField.textContent = '';
-    DOC._logField.textContent = '';
+    DOC._errorField.setAttribute('style', 'white-space: pre-line;');    // to use \r\n in textContent commands
+    DOC._logField.setAttribute('style', 'white-space: pre-line;');      // to use \r\n in textContent commands
+    DOC._errorField.textContent = '';   // reset error messages with every new request
+    DOC._logField.textContent = '';     // reset error messages with every new request
     if (DOC.rButton_onlyDigit.checked) {
-        let checkDigitResult = createCheckDigit(DOC.inputField.value);
+        let checkDigitResult = CALC.createCheckDigit(DOC.inputField.value);
         DOC.resultField.setAttribute('placeholder', checkDigitResult);
     } else {
-        let checkLetterResult = createCheckLetter(DOC.inputField.value);
+        let checkLetterResult = CALC.createCheckLetter(DOC.inputField.value);
         DOC.resultField.setAttribute('placeholder', checkLetterResult);
     }
 };
