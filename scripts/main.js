@@ -134,30 +134,7 @@ CALC.transformInputToNumbers = inputString => {
 }
 
 
-CALC.createCheckDigit = inputString => {
-    
-    let inputAsNumbers = CALC.transformInputToNumbers(inputString);
-        
-    // step 1: multiply each digit with corresponding wighting nr.
-    for (let j = 0; j<12; j++) {
-        inputAsNumbers[j] = inputAsNumbers[j] * CALC._weighting[j%3];
-    };
-    console.log('step 1) multiplication results: ' + inputAsNumbers);
-    // step 2: add the products from step 1
-    inputAsNumbers = inputAsNumbers.reduce((accumulator, currentVal) =>
-        accumulator + currentVal
-    );
-    console.log('step 2) added products from step 1: ' + inputAsNumbers);
-    // step 3 & 4: Divide by ten and keep reminder
-    inputAsNumbers = inputAsNumbers % 10;
-    console.log('step 3 & 4) reminder of division by 10: ' + inputAsNumbers);
-    CALC.result = [CALC.result, '<<<', inputAsNumbers].join('');
-    console.log('result with check digit: ' + CALC.result);
-    return CALC.result;
-}
-
-
-CALC.createCheckLetter = inputString => {
+CALC.createCheckChar = (inputString, choise) => {
     const inputAsNumbers = CALC.transformInputToNumbers(inputString);
     const multiplicationResults = []; 
     for (let i = 0; i < 12; i++) {
@@ -172,38 +149,38 @@ CALC.createCheckLetter = inputString => {
     CALC.log(
         `> Step 2) Added products from step 1: ${sumOfAllProducts}\r\n`
     );
-    const reminderOfDivison = sumOfAllProducts % 36;
-    CALC.log(`> Step 3 & 4) Reminder of division by 36: ${reminderOfDivison}\r\n`);
-    // results from 0-9 are displayed as nr., above, alphabetical chars are used.
-
+    let reminderOfDivison;
+    if (choise == 'number') {
+        reminderOfDivison = sumOfAllProducts % 10;
+        CALC.log(`> Step 3 & 4) Reminder of division by 10: ${reminderOfDivison}\r\n`);
+    } else if (choise == 'letter') {
+        reminderOfDivison = sumOfAllProducts % 36;
+        CALC.log(`> Step 3 & 4) Reminder of division by 36: ${reminderOfDivison}\r\n`);
+    }
     let checkLetter;
     if (reminderOfDivison < 10) {
         checkLetter = reminderOfDivison;
     } else {
         checkLetter = Object.entries(CALC._consideredValues._abc)[reminderOfDivison - 10][0];
     }
-
     CALC.result = [CALC.result, '<<<', checkLetter].join('');
-
     CALC.log(
         `> Result with check letter: ${CALC.result}\r\n`
     );
     return CALC.result;
 }
 
-/**
- * 
- */
+
 DOC.submitButton.onclick = () => {
     DOC._errorField.setAttribute('style', 'white-space: pre-line;');    // to use \r\n in textContent commands
     DOC._logField.setAttribute('style', 'white-space: pre-line;');      // to use \r\n in textContent commands
     DOC._errorField.textContent = '';   // reset error messages with every new request
     DOC._logField.textContent = '';     // reset error messages with every new request
     if (DOC.rButton_onlyDigit.checked) {
-        let checkDigitResult = CALC.createCheckDigit(DOC.inputField.value);
+        let checkDigitResult = CALC.createCheckChar(DOC.inputField.value, 'number');
         DOC.resultField.setAttribute('placeholder', checkDigitResult);
     } else {
-        let checkLetterResult = CALC.createCheckLetter(DOC.inputField.value);
+        let checkLetterResult = CALC.createCheckChar(DOC.inputField.value, 'letter');
         DOC.resultField.setAttribute('placeholder', checkLetterResult);
     }
 };
