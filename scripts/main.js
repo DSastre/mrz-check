@@ -43,7 +43,13 @@ const CALC = {
             return this._preparedLog[0] + testingString + this._preparedLog[1];
         }
     },
-    result: ''
+    result: '',
+    log(logMessage) {
+        DOC.logField = logMessage;
+    },
+    error(errorMessage) {
+        DOC.errorField = errorMessage;
+    }
 }
 
 
@@ -72,7 +78,7 @@ const DOC = {
 
 
 CALC.prepareData = testingString => {
-    DOC.logField = CALC.msg.rawLog(testingString);
+    CALC.log(CALC.msg.rawLog(testingString));
     // convert all letters to uppercase-notation
     testingString = testingString.toUpperCase();
     // handle cases with no input
