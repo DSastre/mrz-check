@@ -77,39 +77,44 @@ const DOC = {
 }
 
 
+/* 
+function:  CALC.prepareData
+
+- converts all letters to uppercase-notation
+- handles cases with no input
+- converts string to arrays
+- fills all elements with less than 12 positions with '<'
+- trims elements with more than 12 positions
+- fills all spaces between arrays with '<'
+- changes invalid symbols to '<' 
+*/
+
 CALC.prepareData = testingString => {
-    CALC.log(CALC.msg.rawLog(testingString));
-    // convert all letters to uppercase-notation
-    testingString = testingString.toUpperCase();
-    // handle cases with no input
-    if (testingString.length == 0) {
+    CALC.log(CALC.msg.rawLog(testingString));   // log raw input
+    testingString = testingString.toUpperCase();    // convert to uppercase
+    if (testingString.length == 0) {    // handle empty string
         testingString = '<<<<<<<<<<<<';
-        DOC.errorField = CALC.msg.emptyError;
+        CALC.error(CALC.msg.emptyError);   // log error
     };
-    // convert string to arrays
-    testingString = Array.from(testingString);
-    if (testingString.length <= 12) {
-        // fill all elements with less than 12 positions with '<'
+    testingString = Array.from(testingString);  // make array from string
+    if (testingString.length <= 12) {   // fill strings with length <= 12
         const fillSymbols = Array(12 - testingString.length).fill('<');
         testingString = Array.from(testingString).concat(fillSymbols);
-    } else {
-        // trim elements with more than 12 positions
+    } else {    // trim strings with length > 12
         testingString.splice(12);
-        DOC.errorField = CALC.msg.exceedError;
+        CALC.error(CALC.msg.exceedError);  // log error
     };
-    // fill all spaces between arrays with '<'
-    testingString.forEach(element => {
+    testingString.forEach(element => {  // fill spaces with '<'
         if (element == ' ') { element = '<'}
     });
-    // change invalid symbols to '<'
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 12; i++) {  // replace invalid symbols with '<'
         if (CALC.consideredValues.includes(testingString[i]) == false) { 
-            DOC.errorField = CALC.msg.invalidError(testingString[i], i);
+            CALC.error(CALC.msg.invalidError(testingString[i], i));
             testingString[i] = '<';
         } 
     };
     CALC.result = testingString.join('');
-    DOC.logField = CALC.msg.preparedLog(testingString);
+    CALC.log(CALC.msg.preparedLog(testingString));
     return testingString;
 }
 
