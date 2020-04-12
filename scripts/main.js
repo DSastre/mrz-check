@@ -4,7 +4,7 @@
  *                                   *
 **************************************/
 
-
+// Calculator namespace
 const CALC = {
     _weighting: [7, 3, 1],
     _consideredValues: { 
@@ -25,24 +25,6 @@ const CALC = {
         });
         return digitsAsStrings.concat(Object.keys(this._consideredValues._abc));
     },
-    msg: { 
-        emptyError: `> Element didn't contain any symbols and has been filled with '<'.\r\n`,
-        exceedError: `> Element exceeded the maximum length of 12 symbols and has been trimmed.\r\n`,
-        _invalidError: [`> Invalid symbol '`, `' at index `, ` has been replaced with '<'.\r\n`],
-        _rawLog: [`> Raw input: '`, `'\r\n`],
-        _preparedLog: [`> Prepared string for further calculation: '`, `'\r\n`],
-        invalidError(symbol, index) {
-            return this._invalidError[0] + symbol + 
-            this._invalidError[1] + index + 
-            this._invalidError[2];
-        },
-        rawLog(testingString) {
-            return this._rawLog[0] + testingString + this._rawLog[1];
-        },
-        preparedLog(testingString) {
-            return this._preparedLog[0] + testingString + this._preparedLog[1];
-        }
-    },
     result: '',
     log(logMessage) {
         DOC.logField = logMessage;
@@ -52,7 +34,7 @@ const CALC = {
     }
 }
 
-
+// Document namespace
 const DOC = {
     _errorField: document.getElementById('error'),
     _logField: document.getElementById('log'),
@@ -70,17 +52,18 @@ const DOC = {
             this._logField.textContent += logMessage;
         } 
     },
-    rButton_onlyDigit: document.getElementById('checkdigit'),
-    inputField: document.getElementById('input-field'),
-    resultField: document.getElementById('result-field'),
-    submitButton: document.getElementById('submit-button')
+    _rButton_onlyDigit: document.getElementById('checkdigit'),
+    _inputField: document.getElementById('input-field'),
+    _resultField: document.getElementById('result-field'),
+    set resultField(result) {
+        this._resultField.setAttribute('placeholder', result);
+    },
+    _submitButton: document.getElementById('submit-button')
 }
 
 
 CALC.prepareData = inputString => {   
-    CALC.log(
-        `> Raw input: '${inputString}'\r\n`
-    );  
+    CALC.log(`> Raw input: '${inputString}'\r\n`);  
     let upperCaseString = inputString.toUpperCase();
     if (upperCaseString.length == 0) {
         upperCaseString = '<<<<<<<<<<<<';
@@ -99,7 +82,7 @@ CALC.prepareData = inputString => {
     });
     for (let i = 0; i < 12; i++) {
         if (CALC.consideredValues.includes(convertedToArray[i]) == false) { 
-            CALC.error(`> Invalid symbol '${convertedToArray[i]}' at index ${i} has been replaced with '<'.\r\n`);
+            CALC.error(`> Invalid symbol '${convertedToArray[i]}' at index ${i} has been replaced with '<'\r\n`);
             convertedToArray[i] = '<';
         } 
     };
@@ -130,17 +113,13 @@ CALC.createCheckChar = (inputString, choise) => {
     for (let i = 0; i < 12; i++) {
         multiplicationResults[i] = inputAsNumbers[i] * CALC._weighting[i%3];
     };
-    CALC.log(
-        `> Step 1) Multiplication results: ${multiplicationResults}\r\n`
-    );
+    CALC.log(`> Step 1) Multiplication results: ${multiplicationResults}\r\n`);
     const sumOfAllProducts = multiplicationResults.reduce((previousVal, currentVal) =>
         previousVal + currentVal
     );
-    CALC.log(
-        `> Step 2) Added products from step 1: ${sumOfAllProducts}\r\n`
-    );
+    CALC.log(`> Step 2) Added products from step 1: ${sumOfAllProducts}\r\n`);
     let reminderOfDivison;
-    if (choise == 'number') {
+    if (choise == 'digit') {
         reminderOfDivison = sumOfAllProducts % 10;
         CALC.log(`> Step 3 & 4) Reminder of division by 10: ${reminderOfDivison}\r\n`);
     } else if (choise == 'letter') {
@@ -154,23 +133,21 @@ CALC.createCheckChar = (inputString, choise) => {
         checkLetter = Object.entries(CALC._consideredValues._abc)[reminderOfDivison - 10][0];
     }
     CALC.result = [CALC.result, '<<<', checkLetter].join('');
-    CALC.log(
-        `> Result with check letter: ${CALC.result}\r\n`
-    );
+    CALC.log( `> Result with check character: ${CALC.result}\r\n`);
     return CALC.result;
 }
 
 
-DOC.submitButton.onclick = () => {
+DOC._submitButton.onclick = () => {
     DOC._errorField.setAttribute('style', 'white-space: pre-line;');
     DOC._logField.setAttribute('style', 'white-space: pre-line;');
     DOC._errorField.textContent = '';
     DOC._logField.textContent = '';
-    if (DOC.rButton_onlyDigit.checked) {
-        let checkDigitResult = CALC.createCheckChar(DOC.inputField.value, 'number');
-        DOC.resultField.setAttribute('placeholder', checkDigitResult);
+    if (DOC._rButton_onlyDigit.checked) {
+        let checkDigitResult = CALC.createCheckChar(DOC._inputField.value, 'digit');
+        DOC.resultField = checkDigitResult;
     } else {
-        let checkLetterResult = CALC.createCheckChar(DOC.inputField.value, 'letter');
-        DOC.resultField.setAttribute('placeholder', checkLetterResult);
+        let checkLetterResult = CALC.createCheckChar(DOC._inputField.value, 'letter');
+        DOC.resultField = checkLetterResult;
     }
 };
