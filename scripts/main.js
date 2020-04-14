@@ -118,20 +118,29 @@ CALC.createCheckChar = (inputString, choise) => {
         previousVal + currentVal
     );
     CALC.log(`> Step 2) Added products from step 1: ${sumOfAllProducts}\r\n`);
-    let reminderOfDivison;
+    
+   
+    let modulus;
     if (choise == 'digit') {
-        reminderOfDivison = sumOfAllProducts % 10;
-        CALC.log(`> Step 3 & 4) Reminder of division by 10: ${reminderOfDivison}\r\n`);
+        modulus = sumOfAllProducts % 10;
+        CALC.log(`> Step 3) Reminder of division by 10: ${modulus}\r\n`);
+        
+
+        
+        //reminderOfDivison = sumOfAllProducts % 10;
+        //CALC.log(`> Step 3 & 4) Reminder of division by 10: ${reminderOfDivison}\r\n`);
     } else if (choise == 'letter') {
-        reminderOfDivison = sumOfAllProducts % 36;
-        CALC.log(`> Step 3 & 4) Reminder of division by 36: ${reminderOfDivison}\r\n`);
+        modulus = sumOfAllProducts % 36;
+        CALC.log(`> Step 3) Reminder of division by 36: ${modulus}\r\n`);
+        //CALC.log(`> Step 3 & 4) Reminder of division by 36: ${reminderOfDivison}\r\n`);
     }
     let checkLetter;
-    if (reminderOfDivison < 10) {
-        checkLetter = reminderOfDivison;
+    if (modulus < 10) {
+        checkLetter = modulus;
     } else {
-        checkLetter = Object.entries(CALC._consideredValues._abc)[reminderOfDivison - 10][0];
+        checkLetter = Object.entries(CALC._consideredValues._abc)[modulus - 10][0];
     }
+    CALC.log(`> Step 4) Checkdigit is: ${checkLetter}\r\n`);
     CALC.result = [CALC.result, '<<<', checkLetter].join('');
     CALC.log( `> Result with check character: ${CALC.result}\r\n`);
     return CALC.result;
