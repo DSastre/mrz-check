@@ -10,7 +10,7 @@ Download all files and open index.html in your Browser. The page uses Bootstrap 
 
 The input only considers alphabetical and numerical characters with a maximum of 12 characters. Any other symbol will be converted into a '<'. 
 
-To follow the discrete steps of the algorithm open the console in the DevTools of your browser. 
+The discrete steps of the algorithm are displayed as log notifications below the output line.
 
 
 ## Contributing

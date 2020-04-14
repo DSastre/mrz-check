@@ -118,21 +118,13 @@ CALC.createCheckChar = (inputString, choise) => {
         previousVal + currentVal
     );
     CALC.log(`> Step 2) Added products from step 1: ${sumOfAllProducts}\r\n`);
-    
-   
     let modulus;
     if (choise == 'digit') {
         modulus = sumOfAllProducts % 10;
         CALC.log(`> Step 3) Reminder of division by 10: ${modulus}\r\n`);
-        
-
-        
-        //reminderOfDivison = sumOfAllProducts % 10;
-        //CALC.log(`> Step 3 & 4) Reminder of division by 10: ${reminderOfDivison}\r\n`);
     } else if (choise == 'letter') {
         modulus = sumOfAllProducts % 36;
         CALC.log(`> Step 3) Reminder of division by 36: ${modulus}\r\n`);
-        //CALC.log(`> Step 3 & 4) Reminder of division by 36: ${reminderOfDivison}\r\n`);
     }
     let checkLetter;
     if (modulus < 10) {
